@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="ssm_utils" />
+        <module name="ssm_domain" />
+        <module name="com.ssm" />
+        <module name="ssm_service" />
+        <module name="ssm_web" />
+        <module name="ssm_dao" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="com.ssm.utils" target="8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_STRING" value="-encoding UTF-8" />
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="com.ssm" options="" />
+      <module name="com.ssm.utils" options="" />
+      <module name="ssm_dao" options="" />
+      <module name="ssm_domain" options="" />
+      <module name="ssm_service" options="" />
+      <module name="ssm_utils" options="" />
+      <module name="ssm_web" options="" />
+    </option>
+  </component>
+</project>

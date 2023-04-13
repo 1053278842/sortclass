@@ -1,0 +1,115 @@
+@charset "UTF-8";
+body {
+    background-color: #f4f6f9;
+    font-size: 14px;
+    font-weight: 400;
+    color: #6c757d;
+}
+
+#logo {
+    border: 2px solid floralwhite;
+    border-radius: 100%;
+    box-shadow: 0 2px 6px #7b7f86;
+    width: 110px;
+    height: 110px;
+    background: white;
+    text-align: center;
+    margin: 35px auto 30px auto;
+    display: block;
+}
+
+#InfoBg {
+    margin: 0 auto;
+    display: block;
+    width: 360px;
+    text-align: center;
+    background: #ffffffdb;
+    box-shadow: 0px 2px 4px #b2cbe0;
+    border-radius: 2px;
+    padding: 20px;
+    height: 450px;
+    border-top: 18px solid cadetblue;
+}
+
+#BigTable {
+    margin: auto;
+    text-align: left;
+}
+
+#BigTable caption {
+    letter-spacing: 3px;
+    font-size: 20px;
+    margin-top: -12px;
+    color: #487eb7;
+}
+
+#SmallTable {
+    color: #6c757d !important;
+    margin-top: -5px;
+}
+
+.FirstField, .FirstField2 {
+    font-weight: 600;
+}
+
+#BigTable tr {
+    padding-top: 3px;
+    display: block;
+}
+
+#SmallTable tr {
+    padding-top: 1px;
+    display: block;
+}
+
+.Data_Text {
+    padding: 2px 5px;
+}
+
+input:-webkit-autofill {
+    box-shadow: 0 0 0px 1000px white inset !important;
+    border: 1px solid #a9a9a9;
+}
+
+.Input_Button {
+    margin: 20px 12px 0px 12px;
+    background: #509cca;
+    color: white;
+    border-radius: 3px;
+    width: 80px;
+    height: 30px;
+    letter-spacing: 3px;
+    font-weight: 450px;
+    box-shadow: 0px 2px 4px #bccaec;
+    border: 0px;
+}
+
+.Input_Button:hover {
+    background: #2f7ba9;
+    box-shadow: 0px 2px 4px #3f568e;
+}
+
+#Foot {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#Foot span {
+    margin: 0 3px;
+
+}
+
+#Foot div {
+    text-align: center;
+}
+
+.infobg {
+    display: inline-block !important;
+    margin: auto 5px !important;
+}
+
+#mainInfo {
+    text-align: center;
+}

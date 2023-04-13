@@ -1,0 +1,32 @@
+#FinalTable {
+    /*border:2px solid #22303e;*/
+}
+
+#FinalTable td {
+    /*background-color: #97d6e4;*/
+}
+
+table tr:first-child {
+    text-align: center;
+    font-weight: 800;
+    letter-spacing: 60px;
+    background-color: #375556 !important;
+    color: aliceblue;
+}
+
+table #title_table {
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 20px;
+    background-color: cadetblue !important;
+    color: aliceblue;
+}
+
+table .even td:first-child, .odd td:first-child {
+    background-color: #80bbd7 !important;
+    color: #0c0c0c;
+    width: 5px;
+    font-size: 15px;
+    line-height: 20px;
+}
