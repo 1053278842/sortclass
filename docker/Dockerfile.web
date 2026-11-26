@@ -24,7 +24,8 @@ RUN rm -rf /usr/local/tomcat/webapps/* \
 # war 由 `mvn clean package -DskipTests` 产出
 COPY ssm_web/target/ssm_web.war /usr/local/tomcat/webapps/ssm_web.war
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+# sed 兜底：即使脚本被 Windows 的换行转换搞成 CRLF，也能正常执行
+RUN sed -i 's/\r$//' /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 8080
 
