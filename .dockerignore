@@ -1,0 +1,16 @@
+# 只用 war 和 docker/ 里的文件做构建上下文，避免把 .git、docs 等大目录传给 daemon
+.git
+.idea
+docs
+samples
+node_modules
+package-lock.json
+package.json
+webpack.config.js
+ssm_dao/target
+ssm_domain/target
+ssm_service/target
+ssm_utils/target
+ssm_web/target/classes
+ssm_web/target/ssm_web
+ssm_web/src/main/webapp/uploads

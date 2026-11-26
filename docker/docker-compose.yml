@@ -1,0 +1,49 @@
+# sortclass 一键启动（使用阿里云个人镜像仓库里的镜像）
+#
+#   docker compose -f docker/docker-compose.yml up -d
+#   docker compose -f docker/docker-compose.yml down          # 停止，保留数据
+#   docker compose -f docker/docker-compose.yml down -v       # 停止并清空数据（下次启动重新导入演示数据）
+services:
+  mysql:
+    image: crpi-jjrtzj5uuz1ioat1.cn-shanghai.personal.cr.aliyuncs.com/liunidie/sortclass-mysql:1.0.0
+    container_name: sortclass-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: sortclass
+      TZ: Asia/Shanghai
+    # 首次启动（数据卷为空）会自动执行镜像里的 01-schema.sql / 02-seed.sql
+    volumes:
+      - sortclass-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-psortclass"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks:
+      - sortclass
+
+  web:
+    image: crpi-jjrtzj5uuz1ioat1.cn-shanghai.personal.cr.aliyuncs.com/liunidie/sortclass-web:1.0.0
+    container_name: sortclass-web
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: sortclass
+      DB_USER: root
+      DB_PASSWORD: sortclass
+      TZ: Asia/Shanghai
+    ports:
+      - "8080:8080"
+    networks:
+      - sortclass
+
+volumes:
+  sortclass-mysql-data:
+
+networks:
+  sortclass:
+    driver: bridge

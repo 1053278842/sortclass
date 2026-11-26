@@ -12,22 +12,25 @@
 
 ## 1. 效果预览
 
+> 图片走 jsDelivr CDN（GitHub 的 `raw.githubusercontent.com` / 图片代理在国内经常打不开，
+> 图片文件本身就在仓库的 [`docs/screenshots`](docs/screenshots) 目录里，可直接下载查看）。
+
 | 最终排班表（核心页面） | 志愿者空闲时间登记（学生端） |
 | --- | --- |
-| ![最终排班表](docs/screenshots/07-final-table.png) | ![志愿者登记](docs/screenshots/04-volunteer-register.png) |
+| ![最终排班表](https://gcore.jsdelivr.net/gh/1053278842/sortclass@master/docs/screenshots/07-final-table.png) | ![志愿者登记](https://gcore.jsdelivr.net/gh/1053278842/sortclass@master/docs/screenshots/04-volunteer-register.png) |
 
-更多截图见 [`docs/screenshots`](docs/screenshots) 目录：
+更多截图（点击可看大图）：
 
 | 截图 | 说明 |
 | --- | --- |
-| [01-login.png](docs/screenshots/01-login.png) | 后台登录页 |
-| [02-volunteer-list.png](docs/screenshots/02-volunteer-list.png) | 首页：志愿者列表（分页 / 搜索 / 出勤次数 ±1） |
-| [03-upload-timetable.png](docs/screenshots/03-upload-timetable.png) | 班级课表上传（填班级人数 + 选 `.xls`） |
-| [04-volunteer-register.png](docs/screenshots/04-volunteer-register.png) | 学生端匿名页：填学号姓名班级、勾选空闲节次 |
-| [05-volunteer-success.png](docs/screenshots/05-volunteer-success.png) | 登记成功回显（"xxx 同学于 … 选课成功！"） |
-| [06-generate-params.png](docs/screenshots/06-generate-params.png) | 排班参数设置（周次 / 频率 / 日期区间 / 周段） |
-| [07-final-table.png](docs/screenshots/07-final-table.png) | **最终排班表**：5 天 × 4 大节，红字为分配的志愿者 |
-| [08-class-timetable.png](docs/screenshots/08-class-timetable.png) | 单班级课表查看（不带志愿者） |
+| [01-login.png](https://gcore.jsdelivr.net/gh/1053278842/sortclass@master/docs/screenshots/01-login.png) | 后台登录页 |
+| [02-volunteer-list.png](https://gcore.jsdelivr.net/gh/1053278842/sortclass@master/docs/screenshots/02-volunteer-list.png) | 首页：志愿者列表（分页 / 搜索 / 出勤次数 ±1） |
+| [03-upload-timetable.png](https://gcore.jsdelivr.net/gh/1053278842/sortclass@master/docs/screenshots/03-upload-timetable.png) | 班级课表上传（填班级人数 + 选 `.xls`） |
+| [04-volunteer-register.png](https://gcore.jsdelivr.net/gh/1053278842/sortclass@master/docs/screenshots/04-volunteer-register.png) | 学生端匿名页：填学号姓名班级、勾选空闲节次 |
+| [05-volunteer-success.png](https://gcore.jsdelivr.net/gh/1053278842/sortclass@master/docs/screenshots/05-volunteer-success.png) | 登记成功回显（"xxx 同学于 … 选课成功！"） |
+| [06-generate-params.png](https://gcore.jsdelivr.net/gh/1053278842/sortclass@master/docs/screenshots/06-generate-params.png) | 排班参数设置（周次 / 频率 / 日期区间 / 周段） |
+| [07-final-table.png](https://gcore.jsdelivr.net/gh/1053278842/sortclass@master/docs/screenshots/07-final-table.png) | **最终排班表**：5 天 × 4 大节，红字为分配的志愿者 |
+| [08-class-timetable.png](https://gcore.jsdelivr.net/gh/1053278842/sortclass@master/docs/screenshots/08-class-timetable.png) | 单班级课表查看（不带志愿者） |
 
 ---
 
@@ -69,7 +72,12 @@ sortclass/
 ├── db/
 │   ├── schema.sql              # 建库建表（4 张表）
 │   ├── seed.sql               # 演示数据（3 班级 / 32 课程 / 9 志愿者）
-│   └── docker-compose.yml     # 一键起 MySQL 5.7 并自动导入上面两个脚本
+│   └── docker-compose.yml     # 本地起 MySQL 5.7 并自动导入上面两个脚本
+├── docker/                     # 镜像构建（阿里云 ACR 里已发布 sortclass-web / sortclass-mysql）
+│   ├── Dockerfile.web         # Tomcat 9 + JDK 17 + war
+│   ├── Dockerfile.mysql       # MySQL 5.7 + schema + seed
+│   ├── entrypoint.sh          # 等 DB → 解压 war → 按环境变量写 db.properties
+│   └── docker-compose.yml     # 用镜像一键起整套
 ├── samples/                    # 三个班级课表 .xls（可直接上传），格式说明见 samples/README.md
 └── docs/screenshots/           # 复现出来的页面截图
 ```
@@ -87,6 +95,9 @@ sortclass/
 | MySQL | 5.7（推荐）或 8.0 | 用 Docker 起最省事；8.0 需要用新驱动，见 [第 10 节](#10-常见问题) |
 | Tomcat | **9.0.x** | 本次用 9.0.124；切勿用 Tomcat 10+ |
 | Docker | 可选 | 只为起 MySQL，本机已有 MySQL 可跳过 |
+
+> **只想看效果、不想装 JDK/Tomcat/MySQL？** 直接用打包好的镜像，两条命令起来：
+> 见 [第 11 节 Docker 镜像](#11-docker-镜像阿里云-acr)。
 
 ### 4.2 起数据库
 
@@ -418,7 +429,107 @@ docker compose down -v && docker compose up -d    # 删卷重建，自动重放 
 
 ---
 
-## 11. 说明
+## 11. Docker 镜像（阿里云 ACR）
+
+已经在阿里云个人版镜像仓库里放好了两个镜像（命名空间 `liunidie`，上海地域）：
+
+| 镜像 | 内容 | 大小 |
+| --- | --- | --- |
+| `liunidie/sortclass-web:1.0.0` | Tomcat 9 + JDK 17 + `ssm_web.war`，启动时按环境变量生成数据源配置 | ≈533 MB |
+| `liunidie/sortclass-mysql:1.0.0` | MySQL 5.7 + `schema.sql` + `seed.sql`，首次启动自动建表灌数据 | ≈501 MB |
+
+完整地址：
+
+```
+crpi-jjrtzj5uuz1ioat1.cn-shanghai.personal.cr.aliyuncs.com/liunidie/sortclass-web:1.0.0
+crpi-jjrtzj5uuz1ioat1.cn-shanghai.personal.cr.aliyuncs.com/liunidie/sortclass-mysql:1.0.0
+```
+
+### 11.1 最快启动：docker compose
+
+```bash
+git clone https://github.com/1053278842/sortclass.git
+cd sortclass
+docker compose -f docker/docker-compose.yml up -d
+```
+
+浏览器打开 <http://localhost:8080/ssm_web/pages/login.jsp>，`admin / admin` 登录。
+首次启动会等 MySQL 初始化完（约 20~40 秒）再拉起 Tomcat，日志里能看到
+`[entrypoint] MySQL ... 已就绪`。
+
+常用命令：
+
+```bash
+docker compose -f docker/docker-compose.yml ps
+docker compose -f docker/docker-compose.yml logs -f web
+docker compose -f docker/docker-compose.yml down     # 停止，数据保留在卷里
+docker compose -f docker/docker-compose.yml down -v  # 连数据一起删，下次重新导入演示数据
+```
+
+### 11.2 或者手动 docker run
+
+```bash
+REG=crpi-jjrtzj5uuz1ioat1.cn-shanghai.personal.cr.aliyuncs.com/liunidie
+
+docker network create sortclass
+
+docker run -d --name sortclass-mysql --network sortclass \
+  -e MYSQL_ROOT_PASSWORD=sortclass \
+  -v sortclass-mysql-data:/var/lib/mysql \
+  $REG/sortclass-mysql:1.0.0
+
+docker run -d --name sortclass-web --network sortclass \
+  -e DB_HOST=sortclass-mysql -e DB_PASSWORD=sortclass \
+  -p 8080:8080 \
+  $REG/sortclass-web:1.0.0
+```
+
+### 11.3 可配置的环境变量（web 镜像）
+
+| 变量 | 默认值 | 说明 |
+| --- | --- | --- |
+| `DB_HOST` | `mysql` | MySQL 主机名 |
+| `DB_PORT` | `3306` | 端口 |
+| `DB_NAME` | `sortclass` | 库名（**必须**叫 `sortclass`，SQL 里写死了库名前缀） |
+| `DB_USER` | `root` | 账号 |
+| `DB_PASSWORD` | `sortclass` | 密码 |
+| `DB_PARAMS` | `useUnicode=true&characterEncoding=utf8&useSSL=false` | JDBC 连接参数 |
+| `DB_WAIT_SECONDS` | `90` | 启动时等待数据库的最长秒数 |
+| `JAVA_OPTS` | `-Duser.timezone=Asia/Shanghai -Dfile.encoding=UTF-8 -Xms256m -Xmx512m` | JVM 参数 |
+
+容器启动脚本 [`docker/entrypoint.sh`](docker/entrypoint.sh) 做的三件事：
+等 MySQL 端口通 → 解压 war → 用上面的变量覆盖 `WEB-INF/classes/db.properties`，然后 `exec catalina.sh run`。
+所以同一份 war 镜像可以直连任何 MySQL，不用改代码重新打包。
+
+### 11.4 自己重新构建 / 推送
+
+```bash
+mvn clean package -DskipTests          # 先出 war
+
+REG=crpi-jjrtzj5uuz1ioat1.cn-shanghai.personal.cr.aliyuncs.com/liunidie
+docker build -f docker/Dockerfile.web   -t $REG/sortclass-web:1.0.0   .
+docker build -f docker/Dockerfile.mysql -t $REG/sortclass-mysql:1.0.0 .
+
+docker push $REG/sortclass-web:1.0.0
+docker push $REG/sortclass-mysql:1.0.0
+```
+
+推之前先登录（个人版 ACR 用仓库的固定域名 + 账号密码）：
+
+```bash
+docker login crpi-jjrtzj5uuz1ioat1.cn-shanghai.personal.cr.aliyuncs.com
+```
+
+### 11.5 镜像使用注意
+
+- **数据持久化**：`sortclass-mysql` 的数据在 `/var/lib/mysql` 卷里；删卷 = 重新导入演示数据。
+- **端口**：容器内固定 8080，映射到宿主机哪个端口随意（`-p 18080:8080` 也行）。
+- **没有内置 Nginx/HTTPS**：仅适合演示/内网，正式环境建议前面加反向代理。
+- 镜像里带了演示数据，**别把 root 密码就这么放公网**；改 `MYSQL_ROOT_PASSWORD` + `DB_PASSWORD` 即可。
+
+---
+
+## 12. 说明
 
 - 演示数据里的姓名、学号、课程都是编的，仅用于展示，版权归原始作者所有。
 - 截图由真实运行的系统产生（Tomcat 9.0.124 + JDK 17 + MySQL 5.7），不是设计稿。

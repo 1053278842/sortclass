@@ -1,0 +1,33 @@
+# sortclass Web 应用镜像：Tomcat 9 + JDK 17 + ssm_web.war
+# 构建（在仓库根目录执行）：
+#   docker build -f docker/Dockerfile.web -t sortclass-web:1.0.0 .
+FROM tomcat:9.0-jdk17-temurin
+
+LABEL org.opencontainers.image.title="sortclass-web" \
+      org.opencontainers.image.description="大学课表/查课排班系统 - Web 应用 (SSM + JSP)" \
+      org.opencontainers.image.source="https://github.com/1053278842/sortclass"
+
+ENV TZ=Asia/Shanghai \
+    LANG=C.UTF-8 \
+    JAVA_OPTS="-Duser.timezone=Asia/Shanghai -Dfile.encoding=UTF-8 -Xms256m -Xmx512m" \
+    DB_HOST=mysql \
+    DB_PORT=3306 \
+    DB_NAME=sortclass \
+    DB_USER=root \
+    DB_PASSWORD=sortclass \
+    DB_PARAMS="useUnicode=true&characterEncoding=utf8&useSSL=false"
+
+# 去掉 Tomcat 自带的示例应用（root、docs、examples…），只部署本项目
+RUN rm -rf /usr/local/tomcat/webapps/* \
+    && mkdir -p /usr/local/tomcat/webapps
+
+# war 由 `mvn clean package -DskipTests` 产出
+COPY ssm_web/target/ssm_web.war /usr/local/tomcat/webapps/ssm_web.war
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+EXPOSE 8080
+
+# 入口脚本负责：等待 MySQL → 解压 war → 用环境变量生成 db.properties → 启动 Tomcat
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["catalina.sh", "run"]

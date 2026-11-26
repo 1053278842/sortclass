@@ -1,0 +1,16 @@
+# sortclass 数据库镜像：MySQL 5.7 + 建表脚本 + 演示数据
+# 构建（在仓库根目录执行）：
+#   docker build -f docker/Dockerfile.mysql -t sortclass-mysql:1.0.0 .
+FROM mysql:5.7
+
+LABEL org.opencontainers.image.title="sortclass-mysql" \
+      org.opencontainers.image.description="大学课表/查课排班系统 - MySQL 5.7（含表结构与演示数据）" \
+      org.opencontainers.image.source="https://github.com/1053278842/sortclass"
+
+ENV TZ=Asia/Shanghai
+
+# 容器首次启动（数据目录为空）时，mysql 官方入口脚本会自动执行 /docker-entrypoint-initdb.d 下的 sql
+COPY db/schema.sql /docker-entrypoint-initdb.d/01-schema.sql
+COPY db/seed.sql /docker-entrypoint-initdb.d/02-seed.sql
+
+CMD ["mysqld", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_general_ci"]
