@@ -12,6 +12,8 @@
     <security:http security="none" pattern="/pages/login.jsp"/>
     <security:http security="none" pattern="/pages/failer.jsp"/>
     <security:http security="none" pattern="/pages/InputPages/inputVolunteerInfo.jsp"/>
+    <!--志愿者登记页面对应的接口需要匿名可用：学生本身不登录后台-->
+    <security:http security="none" pattern="/Student/**"/>
     <!--静态资源不过滤-->
     <security:http security="none" pattern="/css/**"/>
     <security:http security="none" pattern="/img/**"/>

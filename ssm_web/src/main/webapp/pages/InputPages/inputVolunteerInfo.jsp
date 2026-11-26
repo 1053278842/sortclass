@@ -154,31 +154,6 @@
 </div>
 
 <script>
-    //可视化
-    $(function () {
-        $.ajax({
-            type: "get",
-            url: "${pageContext.request.contextPath}/AdminStudent/findAllByMoreCondition.do",
-            contentType: "application/json;charset=UTF-8",
-            dataType: "json",
-            success: function (data) {
-                if (data == null || data == "") {
-                    alert("数据回传空！");
-                } else {
-                    <%--alert("传回分页数据——pageNum：${pageInfo.pageNum}size:${pageInfo.pageSize}");--%>
-                    //列表区域
-                    var str = "";
-                    $("#data_list").html(str);
-                }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                alert(XMLHttpRequest.status);
-                alert(XMLHttpRequest.readyState);
-                alert(textStatus);
-            }
-        })
-    })
-
     $(function () {
         //关于snoinput空间的动态ajax和动画效果
         $("input[name='sno']").keyup(function () {

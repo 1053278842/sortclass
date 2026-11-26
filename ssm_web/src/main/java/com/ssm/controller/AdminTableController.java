@@ -6,7 +6,6 @@ import com.ssm.domain.Student;
 import com.ssm.domain.WeekTables;
 import com.ssm.service.IStudentService;
 import com.ssm.service.ISingleClassAllInfoService;
-import jdk.internal.util.xml.impl.Input;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -27,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Queue;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 //@SessionAttribute(value ={"tables"})
 @Controller
@@ -59,7 +60,8 @@ public class AdminTableController {
         String beforDate, afterDate;
 
         //获取日期范围内的学生
-        String[] tempStrArray = dateRange.split("-");
+        //页面上的日期控件（daterangepicker）使用的分隔符是“ 至 ”，也兼容手写的 " - "
+        String[] tempStrArray = splitDateRange(dateRange);
         beforDate = tempStrArray[0];
         afterDate = tempStrArray[1];
         List<Student> dateRangeStudentList = studentService.findStudentByDateRang(beforDate, afterDate);
@@ -119,8 +121,13 @@ public class AdminTableController {
                 SingleClass sc = scQueue.peek();//获取该节次下入学年升序排列的班级-课程对象
                 Student student = studentQueue.peek();//获取该节次下出勤次数（times)升序排列的学生对象
 
+                //该节次已无可安排的志愿者，本课次结束（避免空指针）
+                if (student == null) {
+                    break;
+                }
+
                 //对应出列poll()和setCanSelected(false)的情况，即达到当前频率下的最大次数和达到最大频率
-                if (student.isCanSelected() && student != null) {
+                if (student.isCanSelected()) {
 
                     //指定该学生为本班级-课程对象的查课人
                     sc.setStudent(student);
@@ -151,7 +158,7 @@ public class AdminTableController {
                         weekTables.setWeekClassSectionByWeightDesc();
                         break;
                     }
-                } else if (!student.isCanSelected()) {
+                } else {
                     //TODO 或改成，当student.setCanSelected(false)时，poll掉所有的ClassSection中studengQueue与之相等的student
                     studentQueue.poll();
                     //TODO 此处重算所有weight,重新循环！
@@ -181,6 +188,30 @@ public class AdminTableController {
         return mv;
     }
 
+
+    /**
+     * 拆分日期区间字符串。
+     * 页面上的日期控件（daterangepicker）输出的格式是 “2026/11/01 - 2026/12/31”，
+     * 也兼容手工输入的 “2026-11-01 至 2026-12-31”、“2026年11月1日 - 2026年12月31日”。
+     * 这里直接从字符串里抓出两个日期，避免不同分隔符导致下标越界。
+     *
+     * @param dateRange 日期区间字符串
+     * @return 长度为2的数组：[起始日期(yyyy-MM-dd), 结束日期(yyyy-MM-dd 23:59:59)]
+     */
+    private String[] splitDateRange(String dateRange) {
+        List<String> dates = new ArrayList<String>();
+        Matcher matcher = Pattern.compile("(\\d{4})\\s*[-/年.]\\s*(\\d{1,2})\\s*[-/月.]\\s*(\\d{1,2})").matcher(
+                dateRange == null ? "" : dateRange);
+        while (matcher.find()) {
+            dates.add(String.format("%04d-%02d-%02d", Integer.parseInt(matcher.group(1)),
+                    Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3))));
+        }
+        if (dates.size() < 2) {
+            //兜底：无法解析时给一个足够宽的区间，避免整张表变空
+            return new String[]{"1970-01-01", "2099-12-31 23:59:59"};
+        }
+        return new String[]{dates.get(0), dates.get(dates.size() - 1) + " 23:59:59"};
+    }
 
     @ResponseBody
     @RequestMapping("/addTimes.do")

@@ -1,4 +1,4 @@
-# Project exclude paths
+# 项目依赖（构建产物与运行期目录，不入库）
 /out/
 /ssm_dao/target/
 /ssm_domain/target/
@@ -6,3 +6,13 @@
 /ssm_utils/target/
 /ssm_web/src/main/webapp/pages/dist/
 /ssm_web/target/
+
+# 上传的课表文件（运行期生成）
+/ssm_web/src/main/webapp/uploads/
+/uploads/
+
+# IDE / 日志
+*.iml
+*.log
+.idea/workspace.xml
+.idea/shelf/

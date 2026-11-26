@@ -1,0 +1,16 @@
+# 一键启动本项目依赖的 MySQL 5.7（固定端口 13306，账号 root/sortclass）
+# 用法：在本目录下执行  docker compose up -d
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: sortclass-mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: sortclass
+      MYSQL_DATABASE: sortclass
+    ports:
+      - "13306:3306"
+    volumes:
+      # 容器首次初始化时自动建表 + 导入演示数据
+      - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro

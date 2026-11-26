@@ -98,13 +98,7 @@
                                         <div id="classNameOptions">
                                             <select id="className" name="className" class="form-control select2"
                                                     style="width: 100%;">
-                                                <option selected="selected">Alabama</option>
-                                                <option>Alaska</option>
-                                                <option>California</option>
-                                                <option>Delaware</option>
-                                                <option>Tennessee</option>
-                                                <option>Texas</option>
-                                                <option>Washington</option>
+                                                <option selected="selected">加载中...</option>
                                             </select>
                                         </div>
                                     </div>
@@ -301,6 +295,23 @@
 
     // 激活导航位置
     setSidebarActive("form-advanced");
+
+    // 班级下拉框：从数据库读取已上传课表的班级
+    $(function () {
+        $.get("${pageContext.request.contextPath}/Grade/getAllGrade.do", function (list) {
+            var $sel = $("#className");
+            $sel.empty();
+            if (list && list.length) {
+                for (var i = 0; i < list.length; i++) {
+                    $sel.append($("<option>").attr("value", list[i].class_name).text(list[i].class_name));
+                }
+                $sel.val(list[0].class_name);
+            } else {
+                $sel.append($("<option>").text("暂无班级数据"));
+            }
+            $sel.trigger("change");
+        }, "json");
+    });
 </script>
 </body>
 

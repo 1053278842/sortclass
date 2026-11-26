@@ -78,11 +78,11 @@ public class AdminStudentController {
 
     @ResponseBody
     @RequestMapping("/findAllByMoreCondition.do")
-    public String findAllByMoreCondition(@RequestBody @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
-                                         @RequestBody @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-                                         @RequestBody @RequestParam(value = "field", defaultValue = "date") String field,
-                                         @RequestBody @RequestParam(value = "sortDire", defaultValue = "desc") String sortDire,
-                                         @RequestBody @RequestParam(value = "likeValue", defaultValue = "") String likeValue,
+    public String findAllByMoreCondition(@RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                         @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+                                         @RequestParam(value = "field", defaultValue = "date") String field,
+                                         @RequestParam(value = "sortDire", defaultValue = "desc") String sortDire,
+                                         @RequestParam(value = "likeValue", defaultValue = "") String likeValue,
                                          HttpSession session) throws Exception {
         List<Student> students = studentService.findAllByMoreCondition(pageNum, pageSize, field, sortDire);
         //likeValue有值就是模糊搜索，只需要pageNum,pageSize,likeValue三个属性

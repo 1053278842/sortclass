@@ -47,7 +47,7 @@ public class StudentController {
 
     @ResponseBody
     @RequestMapping("/isExistBySno.do")
-    public String isExistBySno(@RequestBody @RequestParam(value = "sno") String sno) {
+    public String isExistBySno(@RequestParam(value = "sno") String sno) {
         String status = "";
         Student student = studentService.findStudentBySno(sno);
         //判断，给出返回类型
